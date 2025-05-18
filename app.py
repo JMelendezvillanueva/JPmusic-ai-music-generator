@@ -1,26 +1,31 @@
 import streamlit as st
-import urllib.parse
 
 st.set_page_config(page_title="AI Music Generator", layout="centered")
 
 st.title("🎶 AI Music Generator")
-st.markdown("Create epic AI-generated music using Meta’s **MusicGen** and Suno’s **Bark** via Google Colab.")
+st.markdown("Generate epic music using Meta’s **MusicGen** and Suno’s **Bark**.")
 
-# Input fields
-prompt = st.text_input("🎼 Music Prompt", "A symphonic battle between gods, metal guitars and choirs")
-lyrics = st.text_area("📝 Optional Lyrics (for Bark)", "We rise from ash and fire,\nVoices echo higher...")
+# Inputs
+prompt = st.text_input("🎼 Music Prompt", value="A symphonic battle between gods, metal guitars and choirs")
+lyrics = st.text_area("📝 Optional Lyrics (for Bark)", value="We rise from ash and fire,\nVoices echo higher...")
+duration = st.slider("🎧 Duration (seconds)", 5, 30, 10)
 
-# URL encode inputs
-encoded_prompt = urllib.parse.quote(prompt)
-encoded_lyrics = urllib.parse.quote(lyrics)
+# Generate code to paste into Colab
+st.markdown("## 🧪 Copy this into your Colab notebook:")
 
-# Link to your Colab notebook
-colab_base_url = "https://colab.research.google.com/drive/1d2nUCXBfLZ0EOLoVzSfPNSu7TxbVmeTl"
-colab_link = f"{colab_base_url}?prompt={encoded_prompt}&lyrics={encoded_lyrics}"
+colab_code = f"""
+from audiocraft.models import MusicGen
+import torchaudio
 
-# Output
-st.markdown("## 🔗 Launch Music Generator in Colab")
-st.markdown(f"▶️ [Click here to generate your track]({colab_link})")
+prompt = \"\"\"{prompt}\"\"\"
+duration = {duration}
 
-# Optional: embed player later
-# st.audio("https://your-hosted-link.com/musicgen_output.wav", format="audio/wav")
+model = MusicGen.get_pretrained('facebook/musicgen-small')
+model.set_generation_params(duration=duration)
+instrumental = model.generate([prompt])
+torchaudio.save("musicgen_output.wav", instrumental[0].cpu(), 32000)
+"""
+
+st.code(colab_code, language="python")
+
+st.markdown("🔗 [Open the Colab Notebook](https://colab.research.google.com/drive/1d2nUCXBfLZ0EOLoVzSfPNSu7TxbVmeTl)")
