@@ -14,12 +14,12 @@ duration = st.slider("🎧 Duration (seconds)", min_value=5, max_value=30, value
 if st.button("🎵 Generate Music"):
     with st.spinner("Summoning your symphony..."):
         try:
-            # ✅ Your current ngrok backend URL
-            backend_url = "https://b7f8-24-74-214-254.ngrok-free.app/generate"
+            backend_url = "https://b7f8-24-74-214-254.ngrok-free.app/generate"  # ✅ ngrok backend URL
 
             response = requests.post(
                 backend_url,
-                json={"prompt": prompt, "duration": duration}
+                json={"prompt": prompt, "duration": duration},
+                timeout=60  # ⏱️ Optional: avoids hanging
             )
 
             if response.status_code == 200:
@@ -28,6 +28,8 @@ if st.button("🎵 Generate Music"):
                 st.success("✅ Music generated!")
                 st.audio("output.wav", format="audio/wav")
             else:
-                st.error(f"❌ Backend error: {response.status_code}")
+                st.error(f"❌ Backend responded with status code {response.status_code}")
+        except requests.exceptions.Timeout:
+            st.error("⏰ Backend took too long to respond. Try reducing duration.")
         except Exception as e:
-            st.error(f"❌ Connection failed: {e}")
+            st.error(f"❌ Could not connect to backend: {e}")
