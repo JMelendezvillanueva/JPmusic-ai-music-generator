@@ -4,24 +4,21 @@ import requests
 st.set_page_config(page_title="🎶 AI Music Generator", layout="centered")
 
 st.title("🎶 AI Music Generator")
-st.markdown("Generate epic music using Meta’s **MusicGen** model, powered by your Colab backend.")
+st.markdown("Generate epic music using Meta’s **MusicGen** model, powered by your local backend via ngrok.")
 
-# User Inputs
-prompt = st.text_input("🎼 Music Prompt", value="A cinematic metal battle with electric guitars and choir")
-duration = st.slider("⏱️ Duration (seconds)", min_value=5, max_value=30, value=10)
+# User input
+prompt = st.text_input("🎼 Enter a music prompt", value="A cinematic metal battle with electric guitars and choirs")
+duration = st.slider("🎧 Duration (seconds)", min_value=5, max_value=30, value=10)
 
-# Optional: future Bark integration
-lyrics = st.text_area("📝 (Optional) Lyrics for future Bark vocal input", value="We rise from ash and fire,\nVoices echo higher...")
-
-# Action
+# Action button
 if st.button("🎵 Generate Music"):
-    with st.spinner("Summoning Colab magic..."):
+    with st.spinner("Summoning your symphony..."):
         try:
-            # ⛓️ Replace this with your actual ngrok URL from Colab
-            NGROK_BACKEND_URL = "https://6ab1-34-125-250-202.ngrok-free.app/generate"  # ← CHANGE THIS
+            # ✅ Your current ngrok backend URL
+            backend_url = "https://b7f8-24-74-214-254.ngrok-free.app/generate"
 
             response = requests.post(
-                NGROK_BACKEND_URL,
+                backend_url,
                 json={"prompt": prompt, "duration": duration}
             )
 
@@ -31,6 +28,6 @@ if st.button("🎵 Generate Music"):
                 st.success("✅ Music generated!")
                 st.audio("output.wav", format="audio/wav")
             else:
-                st.error("❌ Error: Backend failed to generate music.")
+                st.error(f"❌ Backend error: {response.status_code}")
         except Exception as e:
-            st.error(f"Connection error: {e}")
+            st.error(f"❌ Connection failed: {e}")
